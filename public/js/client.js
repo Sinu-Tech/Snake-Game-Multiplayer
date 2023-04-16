@@ -44,14 +44,16 @@ socket.on("playerNumber", handlePlayerNumber);
 socket.on("playerScore", handlePlayerScore);
 socket.on("gameStart", handleGameStart);
 socket.on("gameAborted", handleGameAborted);
-socket.on("gameStarted", handleGameStarted);
+socket.on("visualConfigs", handleVisualConfigs);
 
-function handleGameStarted() {
-  document.getElementById("start-game-btn").style.visibility = "hidden";
-  document.getElementById("waiting-message").innerHTML = "Game started!";
-  document.getElementById("waiting-message").style.color = "green";
-  document.getElementById("game-instructions").style.display = "none";
-  document.getElementById("game-over-message-container").style.display = "none";
+function handleVisualConfigs(configs) {
+  console.log("Entrou na função handleVisualConfigs");
+  document.getElementById("sub-title").innerHTML = configs.subTitle;
+  document.getElementById("game-instructions").style.display =
+    configs.gameInstructionsOn;
+  document.getElementById("game-over-message-container").style.display =
+    configs.GameOverMessageContainerOn;
+  document.getElementById("start-game-btn").style.display = configs.startGameButtonOn;
 }
 
 // Function to initialize the game board
@@ -65,7 +67,6 @@ function init() {
   // Create the initial player and food elements
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
-    console.log("Criou player" + gameState.players[i].playerNumber);
   }
   for (let i = 0; i < gameState.foods.length; i++) {
     createFood(gameState.foods[i]);
@@ -125,7 +126,7 @@ function handleGameAborted() {
 // Function to create a player element
 function createPlayer(player) {
   const newPlayer = document.createElement("div");
-  newPlayer.className = "player player-" + player.playerNumber;
+  newPlayer.className = "player player-" + player.id;
   newPlayer.style.gridRowStart = player.y;
   newPlayer.style.gridColumnStart = player.x;
   gameBoard.appendChild(newPlayer);

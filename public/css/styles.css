@@ -28,7 +28,8 @@ body {
 #start-game-btn:hover {
   background-color: #3e8e41;
 }
-#waiting-message {
+
+#sub-title {
   color: white;
   font-size: 16px;
   text-align: center;

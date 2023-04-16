@@ -10,6 +10,12 @@ app.use(express.static("public"));
 let players = [];
 let foods = [];
 let gameLoopIntervalId;
+let visualConfigs = {
+  subTitle: "Waiting for players...",
+  startGameButtonOn: "block",
+  GameOverMessageContainerOn: "none",
+  gameInstructionsOn: "block",
+};
 
 function initGame() {
   // players = [];
@@ -75,6 +81,7 @@ function updateGame() {
 
 io.on("connection", (socket) => {
   console.log(`Player ${socket.id} connected`);
+  io.emit("visualConfigs", visualConfigs);
 
   // Add new player
   const player = {
@@ -116,7 +123,13 @@ io.on("connection", (socket) => {
     // Start game when there are at least two players
     if (players.length >= 2 && !gameLoopIntervalId) {
       console.log("More than 2 players, starting game");
-      io.emit("gameStarted");
+
+      visualConfigs.subTitle = "Game started!";
+      visualConfigs.startGameButtonOn = "none";
+      visualConfigs.GameOverMessageContainerOn = "none";
+      visualConfigs.gameInstructionsOn = "none";
+
+      io.emit("visualConfigs", visualConfigs);
       io.emit("gameStart");
       initGame();
     }
