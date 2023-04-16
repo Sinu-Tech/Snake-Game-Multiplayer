@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
 let players = [];
-let foods = [];
+let food = {};
 let gameLoopIntervalId;
 let visualConfigs = {
   subTitle: "Waiting for players...",
@@ -18,28 +18,23 @@ let visualConfigs = {
 };
 
 function initGame() {
-  // players = [];
-  // foods = [];
   clearInterval(gameLoopIntervalId);
-
-  // Initialize foods
-  for (let i = 0; i < 20; i++) {
-    spawnFood();
-  }
+  spawnFood();
 
   // Start game loop
   gameLoopIntervalId = setInterval(updateGame, 1000);
 }
 
 function spawnFood() {
-  const food = {
+  food = {
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
   };
-  foods.push(food);
+  console.log("Spawnou comida em x: " + food.x + " y: " + food.y);
 }
 
 function updateGame() {
+  // Move players
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     switch (player.direction) {
@@ -59,24 +54,15 @@ function updateGame() {
     // console.log(player.id + " -  x: " + player.x + " y: " + player.y);
 
     // Check if player collided with a food
-    for (let j = 0; j < foods.length; j++) {
-      const food = foods[j];
-      if (player.x === food.x && player.y === food.y) {
-        // Remove food
-        foods.splice(j, 1);
-
-        // Increase player score
-        player.score++;
-
-        // Spawn new food
-        spawnFood();
-        break;
-      }
+    if (player.x === food.x && player.y === food.y) {
+      player.score++;
+      spawnFood();
     }
   }
 
   // Send game state to all clients
-  io.emit("gameState", { players, foods });
+  console.log("Pingando o gameState para todos os players");
+  io.emit("gameState", { players, food });
 }
 
 io.on("connection", (socket) => {
@@ -96,7 +82,7 @@ io.on("connection", (socket) => {
   console.log("Entrou mais um player, agora temos: " + players.length);
 
   // Send initial game state to new player
-  socket.emit("init", { player, players, foods });
+  socket.emit("init", { player, players, food });
 
   // Update player direction
   socket.on("playerMove", (direction) => {
@@ -130,8 +116,10 @@ io.on("connection", (socket) => {
       visualConfigs.gameInstructionsOn = "none";
 
       io.emit("visualConfigs", visualConfigs);
-      io.emit("gameStart");
+
       initGame();
+
+      io.emit("gameStart");
     }
   });
 });

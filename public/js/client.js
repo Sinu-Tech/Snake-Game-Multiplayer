@@ -1,7 +1,7 @@
 const socket = io();
 
 const gameBoard = document.getElementById("game-board");
-const scoreDisplay = document.querySelector(".score");
+const scoreDisplay = document.getElementById("score");
 const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
 const startGameBtn = document.getElementById("start-game-btn");
@@ -53,51 +53,52 @@ function handleVisualConfigs(configs) {
     configs.gameInstructionsOn;
   document.getElementById("game-over-message-container").style.display =
     configs.GameOverMessageContainerOn;
-  document.getElementById("start-game-btn").style.display = configs.startGameButtonOn;
+  document.getElementById("start-game-btn").style.display =
+    configs.startGameButtonOn;
 }
 
 // Function to initialize the game board
-function init() {
-  console.log("Entrou na função init");
+function handleGameStart() {
+  console.log("Entrou na função gameStart cliente");
   gameActive = true;
   scoreDisplay.innerHTML = "Score: " + playerScore;
-  gameOverDisplay.style.display = "none";
-  gameInstructions.style.display = "none";
 
-  // Create the initial player and food elements
+  // Create the initial player and food element
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
   }
-  for (let i = 0; i < gameState.foods.length; i++) {
-    createFood(gameState.foods[i]);
-  }
+  console.log(gameState.food);
+  createFood(gameState.food);
 }
 
 // Function to handle the init event from the server
 function handleInit(msg) {
+  console.log("Entrou na função handleInit");
   gameState = msg;
 }
 
 // Function to handle the gameState event from the server
 function handleGameState(gameStateMsg) {
+  console.log("Entrou na função handleGameState")
   gameState = gameStateMsg;
   // Update the player and food elements on the board
   for (let i = 0; i < gameState.players.length; i++) {
     updatePlayer(gameState.players[i]);
   }
-  for (let i = 0; i < gameState.foods.length; i++) {
-    updateFood(gameState.foods[i]);
-  }
+  console.log(gameState.food);
+  updateFood(gameState.food);
 }
 
 // Function to handle the gameOver event from the server
 function handleGameOver() {
+  console.log("Entrou na função handleGameOver");
   gameActive = false;
   gameOverDisplay.style.display = "block";
 }
 
 // Function to handle the playerNumber event from the server
 function handlePlayerNumber(number) {
+  console.log("Entrou na função handlePlayerNumber");
   playerNumber = number;
   document.getElementById("player-number").innerHTML =
     "You are player " + playerNumber;
@@ -105,19 +106,14 @@ function handlePlayerNumber(number) {
 
 // Function to handle the playerScore event from the server
 function handlePlayerScore(score) {
+  console.log("Entrou na função handlePlayerScore");
   playerScore = score;
   scoreDisplay.innerHTML = "Score: " + playerScore;
 }
 
-// Function to handle the gameStart event from the server
-function handleGameStart() {
-  startGameBtn.style.display = "none";
-  gameInstructions.style.display = "none";
-  init();
-}
-
 // Function to handle the gameAborted event from the server
 function handleGameAborted() {
+  console.log("Entrou na função handleGameAborted");
   gameActive = false;
   gameInstructions.style.display = "block";
   gameOverDisplay.style.display = "none";
@@ -125,6 +121,7 @@ function handleGameAborted() {
 
 // Function to create a player element
 function createPlayer(player) {
+  console.log("Entrou na função createPlayer");
   const newPlayer = document.createElement("div");
   newPlayer.className = "player player-" + player.id;
   newPlayer.style.gridRowStart = player.y;
@@ -134,6 +131,7 @@ function createPlayer(player) {
 
 // Function to update a player element
 function updatePlayer(player) {
+  console.log("Entrou na função updatePlayer");
   const playerElement = document.querySelector(
     ".player-" + player.playerNumber
   );
@@ -144,19 +142,22 @@ function updatePlayer(player) {
 }
 
 // Function to create a food element
-function createFood(foods) {
+function createFood(food) {
+  console.log("Entrou na função createFood");
   const newFood = document.createElement("div");
   newFood.className = "food";
-  newFood.style.gridRowStart = foods.pos.y;
-  newFood.style.gridColumnStart = foods.pos.x;
+  newFood.style.color = "red";
+  newFood.style.gridRowStart = food.y;
+  newFood.style.gridColumnStart = food.x;
   gameBoard.appendChild(newFood);
 }
 
 // Function to update a food element
-function updateFood(foods) {
+function updateFood(food) {
+  console.log("Entrou na função updateFood");
   const foodElement = document.querySelector(".food");
   if (foodElement) {
-    foodElement.style.gridRowStart = foods.pos.y;
-    foodElement.style.gridColumnStart = foods.pos.x;
+    foodElement.style.gridRowStart = food.y;
+    foodElement.style.gridColumnStart = food.x;
   }
 }
