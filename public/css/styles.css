@@ -2,15 +2,15 @@ body {
   background-color: black;
 }
 
-#start-game-btn-container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+#start-game-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 #start-game-btn {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   border: none;
   color: white;
   padding: 10px 32px;
@@ -28,18 +28,18 @@ body {
 #start-game-btn:hover {
   background-color: #3e8e41;
 }
-#message {
+#waiting-message {
   color: white;
   font-size: 16px;
   text-align: center;
   margin-top: 10px;
 }
 
-#game-title{
-    color: white;
-    font-size: 24px;
-    text-align: center;
-    margin-top: 10px;
+#game-title {
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  margin-top: 10px;
 }
 
 #game-board {

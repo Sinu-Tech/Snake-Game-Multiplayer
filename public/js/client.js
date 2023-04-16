@@ -2,17 +2,19 @@ const socket = io();
 
 const gameBoard = document.getElementById("game-board");
 const scoreDisplay = document.querySelector(".score");
-const gameOverDisplay = document.querySelector(".game-over");
+const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
+const startGameBtn = document.getElementById("start-game-btn");
 
 let playerNumber;
 let gameActive = true;
 let playerScore = 0;
 let gameState;
+
+document.getElementById("game-over-message-container").style.display = "none";
 // Listen for start game button click
-document.getElementById("start-game-btn").addEventListener("click", () => {
+startGameBtn.addEventListener("click", () => {
   socket.emit("gameStart");
-  console.log("Emitiu gameStart");
 });
 
 // Listen for keydown events to move the player
@@ -42,20 +44,28 @@ socket.on("playerNumber", handlePlayerNumber);
 socket.on("playerScore", handlePlayerScore);
 socket.on("gameStart", handleGameStart);
 socket.on("gameAborted", handleGameAborted);
+socket.on("gameStarted", handleGameStarted);
+
+function handleGameStarted() {
+  document.getElementById("start-game-btn").style.visibility = "hidden";
+  document.getElementById("waiting-message").innerHTML = "Game started!";
+  document.getElementById("waiting-message").style.color = "green";
+  document.getElementById("game-instructions").style.display = "none";
+  document.getElementById("game-over-message-container").style.display = "none";
+}
 
 // Function to initialize the game board
 function init() {
   console.log("Entrou na função init");
   gameActive = true;
-  gameBoard.innerHTML = "";
-  scoreDisplay.innerHTML = "";
+  scoreDisplay.innerHTML = "Score: " + playerScore;
   gameOverDisplay.style.display = "none";
   gameInstructions.style.display = "none";
 
   // Create the initial player and food elements
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
-    console.log("Criou player"+ gameState.players[i].playerNumber);
+    console.log("Criou player" + gameState.players[i].playerNumber);
   }
   for (let i = 0; i < gameState.foods.length; i++) {
     createFood(gameState.foods[i]);
@@ -64,7 +74,6 @@ function init() {
 
 // Function to handle the init event from the server
 function handleInit(msg) {
-  console.log(msg);
   gameState = msg;
 }
 
@@ -101,7 +110,7 @@ function handlePlayerScore(score) {
 
 // Function to handle the gameStart event from the server
 function handleGameStart() {
-  console.log("Entrou no gamestart");
+  startGameBtn.style.display = "none";
   gameInstructions.style.display = "none";
   init();
 }
@@ -117,8 +126,8 @@ function handleGameAborted() {
 function createPlayer(player) {
   const newPlayer = document.createElement("div");
   newPlayer.className = "player player-" + player.playerNumber;
-  newPlayer.style.gridRowStart = player.pos.y;
-  newPlayer.style.gridColumnStart = player.pos.x;
+  newPlayer.style.gridRowStart = player.y;
+  newPlayer.style.gridColumnStart = player.x;
   gameBoard.appendChild(newPlayer);
 }
 
@@ -128,8 +137,8 @@ function updatePlayer(player) {
     ".player-" + player.playerNumber
   );
   if (playerElement) {
-    playerElement.style.gridRowStart = player.pos.y;
-    playerElement.style.gridColumnStart = player.pos.x;
+    playerElement.style.gridRowStart = player.y;
+    playerElement.style.gridColumnStart = player.x;
   }
 }
 

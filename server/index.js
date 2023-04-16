@@ -12,8 +12,8 @@ let foods = [];
 let gameLoopIntervalId;
 
 function initGame() {
-  players = [];
-  foods = [];
+  // players = [];
+  // foods = [];
   clearInterval(gameLoopIntervalId);
 
   // Initialize foods
@@ -22,7 +22,7 @@ function initGame() {
   }
 
   // Start game loop
-  gameLoopIntervalId = setInterval(updateGame, 100);
+  gameLoopIntervalId = setInterval(updateGame, 1000);
 }
 
 function spawnFood() {
@@ -34,7 +34,6 @@ function spawnFood() {
 }
 
 function updateGame() {
-  // Update player positions
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     switch (player.direction) {
@@ -51,6 +50,7 @@ function updateGame() {
         player.x++;
         break;
     }
+    // console.log(player.id + " -  x: " + player.x + " y: " + player.y);
 
     // Check if player collided with a food
     for (let j = 0; j < foods.length; j++) {
@@ -84,13 +84,15 @@ io.on("connection", (socket) => {
     direction: "right",
     score: 0,
   };
+
   players.push(player);
+  console.log("Entrou mais um player, agora temos: " + players.length);
 
   // Send initial game state to new player
   socket.emit("init", { player, players, foods });
 
   // Update player direction
-  socket.on("updateDirection", (direction) => {
+  socket.on("playerMove", (direction) => {
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === socket.id) {
         players[i].direction = direction;
@@ -110,12 +112,17 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Start game when there are at least two players
-  if (players.length >= 2 && !gameLoopIntervalId) {
-    initGame();
-  }
+  socket.on("gameStart", () => {
+    // Start game when there are at least two players
+    if (players.length >= 2 && !gameLoopIntervalId) {
+      console.log("More than 2 players, starting game");
+      io.emit("gameStarted");
+      io.emit("gameStart");
+      initGame();
+    }
+  });
 });
 
 http.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port http://localhost:${PORT}/`);
 });

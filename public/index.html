@@ -6,11 +6,21 @@
   </head>
   <body>
     <h1 id="game-title">Multiplayer Snake Game</h1>
-    <p id="message">Esperando por outros jogadores...</p>
+    <p id="waiting-message">Esperando por outros jogadores...</p>
     <div id="start-game-btn-container">
       <button id="start-game-btn">Start</button>
     </div>
     <div id="game-board"></div>
+    <div id="game-over-message-container">
+      <p id="game-over-message"></p>
+      <button id="restart-game-btn">Restart</button>
+    </div>
+    <div id="game-score-container">
+      <p class="score"></p>
+    </div>
+    <div id="game-instructions">
+      <span>Use as teclas WASD do teclado para controlar a cobra.</span>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/client.js"></script>
   </body>
