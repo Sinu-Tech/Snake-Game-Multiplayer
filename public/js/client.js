@@ -6,8 +6,7 @@ const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
 const startGameBtn = document.getElementById("start-game-btn");
 
-let playerNumber;
-let gameActive = true;
+let gameActive = false;
 let playerScore = 0;
 let gameState;
 
@@ -21,16 +20,12 @@ startGameBtn.addEventListener("click", () => {
 document.addEventListener("keydown", (event) => {
   if (gameActive) {
     if (event.key === "a") {
-      console.log(playerNumber + " moveu para a esquerda");
       socket.emit("playerMove", "left");
     } else if (event.key === "w") {
-      console.log(playerNumber + " moveu para cima");
       socket.emit("playerMove", "up");
     } else if (event.key === "d") {
-      console.log(playerNumber + " moveu para a direita");
       socket.emit("playerMove", "right");
     } else if (event.key === "s") {
-      console.log(playerNumber + " moveu para baixo");
       socket.emit("playerMove", "down");
     }
   }
@@ -39,12 +34,13 @@ document.addEventListener("keydown", (event) => {
 // Listen for updates from the server
 socket.on("init", handleInit);
 socket.on("gameState", handleGameState);
-socket.on("gameOver", handleGameOver);
-socket.on("playerNumber", handlePlayerNumber);
-socket.on("playerScore", handlePlayerScore);
+// socket.on("gameOver", handleGameOver);
+// socket.on("playerNumber", handlePlayerNumber);
+// socket.on("playerScore", handlePlayerScore);
 socket.on("gameStart", handleGameStart);
-socket.on("gameAborted", handleGameAborted);
+// socket.on("gameAborted", handleGameAborted);
 socket.on("visualConfigs", handleVisualConfigs);
+socket.on("updateFood", handleUpdateFood);
 
 function handleVisualConfigs(configs) {
   console.log("Entrou na função handleVisualConfigs");
@@ -77,6 +73,11 @@ function handleInit(msg) {
   gameState = msg;
 }
 
+function handleUpdateFood(food){
+  updateFood(food);
+}
+
+
 // Function to handle the gameState event from the server
 function handleGameState(gameStateMsg) {
   console.log("Entrou na função handleGameState")
@@ -85,39 +86,37 @@ function handleGameState(gameStateMsg) {
   for (let i = 0; i < gameState.players.length; i++) {
     updatePlayer(gameState.players[i]);
   }
-  console.log(gameState.food);
-  updateFood(gameState.food);
 }
 
 // Function to handle the gameOver event from the server
-function handleGameOver() {
-  console.log("Entrou na função handleGameOver");
-  gameActive = false;
-  gameOverDisplay.style.display = "block";
-}
+// function handleGameOver() {
+//   console.log("Entrou na função handleGameOver");
+//   gameActive = false;
+//   gameOverDisplay.style.display = "block";
+// }
 
 // Function to handle the playerNumber event from the server
-function handlePlayerNumber(number) {
-  console.log("Entrou na função handlePlayerNumber");
-  playerNumber = number;
-  document.getElementById("player-number").innerHTML =
-    "You are player " + playerNumber;
-}
+// function handlePlayerNumber(number) {
+//   console.log("Entrou na função handlePlayerNumber");
+//   playerNumber = number;
+//   document.getElementById("player-number").innerHTML =
+//     "You are player a number:  " + playerNumber;
+// }
 
 // Function to handle the playerScore event from the server
-function handlePlayerScore(score) {
-  console.log("Entrou na função handlePlayerScore");
-  playerScore = score;
-  scoreDisplay.innerHTML = "Score: " + playerScore;
-}
+// function handlePlayerScore(score) {
+//   console.log("Entrou na função handlePlayerScore");
+//   playerScore = score;
+//   scoreDisplay.innerHTML = "Score: " + playerScore;
+// }
 
 // Function to handle the gameAborted event from the server
-function handleGameAborted() {
-  console.log("Entrou na função handleGameAborted");
-  gameActive = false;
-  gameInstructions.style.display = "block";
-  gameOverDisplay.style.display = "none";
-}
+// function handleGameAborted() {
+//   console.log("Entrou na função handleGameAborted");
+//   gameActive = false;
+//   gameInstructions.style.display = "block";
+//   gameOverDisplay.style.display = "none";
+// }
 
 // Function to create a player element
 function createPlayer(player) {
@@ -132,9 +131,11 @@ function createPlayer(player) {
 // Function to update a player element
 function updatePlayer(player) {
   console.log("Entrou na função updatePlayer");
+  console.log(player.id);
   const playerElement = document.querySelector(
-    ".player-" + player.playerNumber
+    ".player-" + player.id
   );
+  console.log(playerElement)
   if (playerElement) {
     playerElement.style.gridRowStart = player.y;
     playerElement.style.gridColumnStart = player.x;
@@ -155,9 +156,14 @@ function createFood(food) {
 // Function to update a food element
 function updateFood(food) {
   console.log("Entrou na função updateFood");
+  console.log(food)
   const foodElement = document.querySelector(".food");
+  console.log(foodElement)
   if (foodElement) {
     foodElement.style.gridRowStart = food.y;
     foodElement.style.gridColumnStart = food.x;
   }
+
 }
+
+

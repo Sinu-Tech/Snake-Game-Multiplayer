@@ -57,6 +57,7 @@ function updateGame() {
     if (player.x === food.x && player.y === food.y) {
       player.score++;
       spawnFood();
+      io.emit("updateFood", food);
     }
   }
 
