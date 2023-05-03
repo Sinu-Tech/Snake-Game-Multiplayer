@@ -9,6 +9,10 @@ body {
   flex-direction: column;
 }
 
+#game-score-container {
+  border-radius: 10px;
+  background-color: #4caf50;
+}
 #start-game-btn {
   background-color: #4caf50;
   border: none;

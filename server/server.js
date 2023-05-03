@@ -62,6 +62,7 @@ function updateGame() {
       player.score++;
       console.log("PLACARRRRRRR Id: " + player.score)
       spawnFood();
+      io.emit("playerScore", player.score);
       io.emit("updateFood", food);
     }
   }
