@@ -19,13 +19,14 @@ startGameBtn.addEventListener("click", () => {
 // Listen for keydown events to move the player
 document.addEventListener("keydown", (event) => {
   if (gameActive) {
-    if (event.key === "a") {
+    console.log(event.key);
+    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
       socket.emit("playerMove", "left");
-    } else if (event.key === "w") {
+    } else if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
       socket.emit("playerMove", "up");
-    } else if (event.key === "d") {
+    } else if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
       socket.emit("playerMove", "right");
-    } else if (event.key === "s") {
+    } else if (event.key === "s" || event.key === "S"|| event.key === "ArrowDown") {
       socket.emit("playerMove", "down");
     }
   }
@@ -85,6 +86,7 @@ function handleGameState(gameStateMsg) {
   // console.log(gameStateMsg.players[0].id + " -  x: " + gameStateMsg.players[0].x + " y: " + gameStateMsg.players[0].y);
   // console.log(gameStateMsg.players[1].id + " -  x: " + gameStateMsg.players[1].x + " y: " + gameStateMsg.players[1].y);
   gameState = gameStateMsg;
+  console.log(gameState.players);
   // Update the player and food elements on the board
   for (let i = 0; i < gameState.players.length; i++) {
     updatePlayer(gameState.players[i]);

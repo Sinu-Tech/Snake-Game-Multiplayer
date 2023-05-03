@@ -22,7 +22,7 @@ function initGame() {
   spawnFood();
 
   // Start game loop
-  gameLoopIntervalId = setInterval(updateGame, 1000);
+  gameLoopIntervalId = setInterval(updateGame, 100);
 }
 
 function spawnFood() {
@@ -39,19 +39,19 @@ function updateGame() {
     const player = players[i];
     switch (player.direction) {
       case "up":
-        if(player.y != 0)
+        if (player.y != 0)
           player.y--;
         break;
       case "down":
-        if(player.y != 39)
+        if (player.y != 39)
           player.y++;
         break;
       case "left":
-        if(player.x != 0)
+        if (player.x != 0)
           player.x--;
         break;
       case "right":
-        if(player.x != 39)
+        if (player.x != 39)
           player.x++;
         break;
     }
@@ -60,6 +60,7 @@ function updateGame() {
     // Check if player collided with a food
     if (player.x === food.x && player.y === food.y) {
       player.score++;
+      console.log("PLACARRRRRRR Id: " + player.score)
       spawnFood();
       io.emit("updateFood", food);
     }
