@@ -54,10 +54,11 @@ function handleVisualConfigs(configs) {
 }
 
 // Function to initialize the game board
-function handleGameStart() {
+function handleGameStart(gameStateMsg) {
   console.log("Entrou na função gameStart cliente");
   gameActive = true;
   scoreDisplay.innerHTML = "Score: " + playerScore;
+  gameState = gameStateMsg;
 
   // Create the initial player and food element
   for (let i = 0; i < gameState.players.length; i++) {
@@ -73,7 +74,7 @@ function handleInit(msg) {
   gameState = msg;
 }
 
-function handleUpdateFood(food){
+function handleUpdateFood(food) {
   updateFood(food);
 }
 
@@ -81,6 +82,8 @@ function handleUpdateFood(food){
 // Function to handle the gameState event from the server
 function handleGameState(gameStateMsg) {
   console.log("Entrou na função handleGameState")
+  // console.log(gameStateMsg.players[0].id + " -  x: " + gameStateMsg.players[0].x + " y: " + gameStateMsg.players[0].y);
+  // console.log(gameStateMsg.players[1].id + " -  x: " + gameStateMsg.players[1].x + " y: " + gameStateMsg.players[1].y);
   gameState = gameStateMsg;
   // Update the player and food elements on the board
   for (let i = 0; i < gameState.players.length; i++) {
@@ -122,9 +125,10 @@ function handleGameState(gameStateMsg) {
 function createPlayer(player) {
   console.log("Entrou na função createPlayer");
   const newPlayer = document.createElement("div");
+  console.log("Criando jogador id: " + player.id);
   newPlayer.className = "player player-" + player.id;
-  newPlayer.style.gridRowStart = player.y;
-  newPlayer.style.gridColumnStart = player.x;
+  newPlayer.style.top = player.y * 20 + "px";
+  newPlayer.style.left = player.x * 20 + "px";
   gameBoard.appendChild(newPlayer);
 }
 
@@ -137,8 +141,8 @@ function updatePlayer(player) {
   );
   console.log(playerElement)
   if (playerElement) {
-    playerElement.style.gridRowStart = player.y;
-    playerElement.style.gridColumnStart = player.x;
+    playerElement.style.top = player.y * 20 + "px";
+    playerElement.style.left = player.x * 20 + "px";
   }
 }
 
@@ -148,8 +152,8 @@ function createFood(food) {
   const newFood = document.createElement("div");
   newFood.className = "food";
   newFood.style.color = "red";
-  newFood.style.gridRowStart = food.y;
-  newFood.style.gridColumnStart = food.x;
+  newFood.style.top = food.y * 20 + "px";
+  newFood.style.left = food.x * 20 + "px";
   gameBoard.appendChild(newFood);
 }
 
@@ -160,8 +164,8 @@ function updateFood(food) {
   const foodElement = document.querySelector(".food");
   console.log(foodElement)
   if (foodElement) {
-    foodElement.style.gridRowStart = food.y;
-    foodElement.style.gridColumnStart = food.x;
+    foodElement.style.top = food.y * 20 + "px";
+    foodElement.style.left = food.x * 20 + "px";
   }
 
 }

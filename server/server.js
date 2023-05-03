@@ -39,16 +39,20 @@ function updateGame() {
     const player = players[i];
     switch (player.direction) {
       case "up":
-        player.y--;
+        if(player.y != 0)
+          player.y--;
         break;
       case "down":
-        player.y++;
+        if(player.y != 39)
+          player.y++;
         break;
       case "left":
-        player.x--;
+        if(player.x != 0)
+          player.x--;
         break;
       case "right":
-        player.x++;
+        if(player.x != 39)
+          player.x++;
         break;
     }
     // console.log(player.id + " -  x: " + player.x + " y: " + player.y);
@@ -62,7 +66,7 @@ function updateGame() {
   }
 
   // Send game state to all clients
-  console.log("Pingando o gameState para todos os players");
+  // console.log("Pingando o gameState para todos os players");
   io.emit("gameState", { players, food });
 }
 
@@ -120,7 +124,7 @@ io.on("connection", (socket) => {
 
       initGame();
 
-      io.emit("gameStart");
+      io.emit("gameStart", { players, food });
     }
   });
 });

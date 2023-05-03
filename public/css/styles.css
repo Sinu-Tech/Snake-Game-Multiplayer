@@ -44,14 +44,17 @@ body {
 }
 
 #game-board {
-  width: 700px;
-  height: 700px;
+  width: 800px;
+  height: 800px;
   margin: 0 auto;
   background-color: rgb(110, 255, 110);
   position: relative;
-  display: grid;
+  /* top: 20px;
+   left: 45px;
+   z-index: 99; */
+  /* display: grid;
   grid-template-columns: repeat(39, 1fr);
-  grid-template-rows: repeat(39, 1fr);
+  grid-template-rows: repeat(39, 1fr); */
 }
 
 #game-board .food {
@@ -66,6 +69,7 @@ body {
   height: 20px;
   background-color: white;
   position: absolute;
+  z-index: 99;
 }
 
 #game-board .score {
