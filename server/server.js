@@ -30,7 +30,7 @@ function spawnFood() {
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
   };
-  console.log("Spawnou comida em x: " + food.x + " y: " + food.y);
+  // console.log("Spawnou comida em x: " + food.x + " y: " + food.y);
 }
 
 function updateGame() {
@@ -60,15 +60,13 @@ function updateGame() {
     // Check if player collided with a food
     if (player.x === food.x && player.y === food.y) {
       player.score++;
-      console.log("PLACARRRRRRR Id: " + player.score)
       spawnFood();
-      io.emit("playerScore", player.score);
+      io.emit("updatePlayersScore", players);
       io.emit("updateFood", food);
     }
   }
 
   // Send game state to all clients
-  // console.log("Pingando o gameState para todos os players");
   io.emit("gameState", { players, food });
 }
 
@@ -81,7 +79,7 @@ io.on("connection", (socket) => {
     id: socket.id,
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
-    direction: "right",
+    direction: "",
     score: 0,
   };
 
@@ -127,6 +125,7 @@ io.on("connection", (socket) => {
       initGame();
 
       io.emit("gameStart", { players, food });
+      io.emit("playersScore", players);
     }
   });
 });

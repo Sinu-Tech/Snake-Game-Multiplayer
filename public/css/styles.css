@@ -2,6 +2,11 @@ body {
   background-color: black;
 }
 
+#game-area{
+  display: flex;
+  gap: 20px;
+}
+
 #start-game-btn-container {
   display: flex;
   justify-content: center;
@@ -11,8 +16,14 @@ body {
 
 #game-score-container {
   border-radius: 10px;
-  background-color: #4caf50;
+  background-color: #ffffff88;
+  width: 200px;
+  max-width: 300px;
+  margin-right: 20px;
+  margin-left: 20px;
+  flex-grow: 2;
 }
+
 #start-game-btn {
   background-color: #4caf50;
   border: none;
@@ -53,12 +64,9 @@ body {
   margin: 0 auto;
   background-color: rgb(110, 255, 110);
   position: relative;
-  /* top: 20px;
-   left: 45px;
-   z-index: 99; */
-  /* display: grid;
-  grid-template-columns: repeat(39, 1fr);
-  grid-template-rows: repeat(39, 1fr); */
+  flex-grow: 6;
+  max-width: 800px;
+  max-height: 800px;
 }
 
 #game-board .food {
@@ -98,6 +106,8 @@ body {
   font-size: 24px;
   text-align: center;
   margin-top: 20px;
+  flex-grow: 2;
+  width: 300px;
 }
 
 #game-instructions span {

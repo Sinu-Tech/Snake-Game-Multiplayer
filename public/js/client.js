@@ -1,7 +1,7 @@
 const socket = io();
 
 const gameBoard = document.getElementById("game-board");
-const scoreDisplay = document.getElementById("score");
+const scoreDisplay = document.getElementById("game-score-container");
 const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
 const startGameBtn = document.getElementById("start-game-btn");
@@ -12,6 +12,7 @@ let playerScore = 0;
 let gameState;
 
 document.getElementById("game-over-message-container").style.display = "none";
+
 // Listen for start game button click
 startGameBtn.addEventListener("click", () => {
   socket.emit("gameStart");
@@ -20,14 +21,25 @@ startGameBtn.addEventListener("click", () => {
 // Listen for keydown events to move the player
 document.addEventListener("keydown", (event) => {
   if (gameActive) {
-    console.log(event.key);
     if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
       socket.emit("playerMove", "left");
-    } else if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
+    } else if (
+      event.key === "w" ||
+      event.key === "W" ||
+      event.key === "ArrowUp"
+    ) {
       socket.emit("playerMove", "up");
-    } else if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
+    } else if (
+      event.key === "d" ||
+      event.key === "D" ||
+      event.key === "ArrowRight"
+    ) {
       socket.emit("playerMove", "right");
-    } else if (event.key === "s" || event.key === "S"|| event.key === "ArrowDown") {
+    } else if (
+      event.key === "s" ||
+      event.key === "S" ||
+      event.key === "ArrowDown"
+    ) {
       socket.emit("playerMove", "down");
     }
   }
@@ -36,13 +48,13 @@ document.addEventListener("keydown", (event) => {
 // Listen for updates from the server
 socket.on("init", handleInit);
 socket.on("gameState", handleGameState);
-// socket.on("gameOver", handleGameOver);
-// socket.on("playerNumber", handlePlayerNumber);
-socket.on("playerScore", handlePlayerScore);
+socket.on("playersScore", handlePlayersScore);
+socket.on("updatePlayersScore", handleUpdatePlayersScore);
 socket.on("gameStart", handleGameStart);
-// socket.on("gameAborted", handleGameAborted);
 socket.on("visualConfigs", handleVisualConfigs);
 socket.on("updateFood", handleUpdateFood);
+// socket.on("gameAborted", handleGameAborted);
+// socket.on("gameOver", handleGameOver);
 
 function handleVisualConfigs(configs) {
   console.log("Entrou na função handleVisualConfigs");
@@ -55,29 +67,35 @@ function handleVisualConfigs(configs) {
     configs.startGameButtonOn;
 }
 
+// Placar de todos os jogadores
+function handlePlayersScore(players) {
+  console.log("Entrou na função handlePlayersScore");
+
+  players.forEach((player) => {
+    createPlayerScore(player.id);
+  });
+}
+
+// Function to handle update players score
+function handleUpdatePlayersScore(players) {
+  console.log("Entrou na função updateScore");
+
+  players.forEach((player) => {
+    updatePlayerScore(player.id, player.score);
+  });
+}
+
 // Function to initialize the game board
 function handleGameStart(gameStateMsg) {
   console.log("Entrou na função gameStart cliente");
   gameActive = true;
-  scoreDisplay.innerHTML = "Score: " + playerScore;
   gameState = gameStateMsg;
-  
 
   // Create the initial player and food element
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
   }
-  console.log(gameState.food);
   createFood(gameState.food);
-
-  const newScoreContainer = document.createElement("div")
-  newScoreContainer.style.display = "flex";
-  newScoreContainer.style.justifyContent = "center";
-  newScoreContainer.style.alignItems = "center";
-  newScoreContainer.style.width = "200px";
-  newScoreContainer.style.height = "800px";
-  newScoreContainer.style.backgroundColor = "white";
-  body.appendChild(newScoreContainer);
 }
 
 // Function to handle the init event from the server
@@ -86,72 +104,39 @@ function handleInit(msg) {
   gameState = msg;
 }
 
+// Function to uptade food position
 function handleUpdateFood(food) {
   updateFood(food);
 }
 
-
 // Function to handle the gameState event from the server
 function handleGameState(gameStateMsg) {
-  console.log("Entrou na função handleGameState")
-  // console.log(gameStateMsg.players[0].id + " -  x: " + gameStateMsg.players[0].x + " y: " + gameStateMsg.players[0].y);
-  // console.log(gameStateMsg.players[1].id + " -  x: " + gameStateMsg.players[1].x + " y: " + gameStateMsg.players[1].y);
   gameState = gameStateMsg;
-  console.log(gameState.players);
-  // Update the player and food elements on the board
   for (let i = 0; i < gameState.players.length; i++) {
     updatePlayer(gameState.players[i]);
   }
 }
 
-// Function to handle the gameOver event from the server
-// function handleGameOver() {
-//   console.log("Entrou na função handleGameOver");
-//   gameActive = false;
-//   gameOverDisplay.style.display = "block";
-// }
+// Function to create a playerScore element
+function createPlayerScore(playerId) {
+  console.log("Entrou na função createScore");
 
-// Function to handle the playerNumber event from the server
-// function handlePlayerNumber(number) {
-//   console.log("Entrou na função handlePlayerNumber");
-//   playerNumber = number;
-//   document.getElementById("player-number").innerHTML =
-//     "You are player a number:  " + playerNumber;
-// }
-
-//Function to handle the playerScore event from the server
-function handlePlayerScore(score) {
-  console.log("Entrou na função handlePlayerScore");
-  playerScore = score;
-  scoreDisplay.innerHTML = "Score: " + playerScore;
+  const newScorePlayer = document.createElement("p");
+  newScorePlayer.className = "score score-" + playerId;
+  newScorePlayer.innerText = playerId + ": 0";
+  scoreDisplay.appendChild(newScorePlayer);
 }
 
-// Function to handle the gameAborted event from the server
-// function handleGameAborted() {
-//   console.log("Entrou na função handleGameAborted");
-//   gameActive = false;
-//   gameInstructions.style.display = "block";
-//   gameOverDisplay.style.display = "none";
-// }
+// Function to update a player score element
+function updatePlayerScore(playerId, score) {
+  const scoreElement = document.querySelector(".score-" + playerId);
+
+  if (scoreElement) {
+    scoreElement.innerText = playerId + ": " + score;
+  }
+}
 
 // Function to create a player element
-function createScore(score) {
-  console.log("Entrou na função createScore");
-  // const newScore = document.createElement("div");
-  // console.log("Criando score: " + score);
-  // newScore.className = "score score-" + score;
-  //gameBoard.appendChild(newScore);
-}
-
-function updateScore(score) {
-  console.log("Entrou na função updateScore");
-  //console.log(score);
-  // const playerElementScore = document.querySelector(
-  //   ".score-" + score
-  // );
-  //console.log(playerElementScore)
-}
-
 function createPlayer(player) {
   console.log("Entrou na função createPlayer");
   const newPlayer = document.createElement("div");
@@ -162,14 +147,10 @@ function createPlayer(player) {
   gameBoard.appendChild(newPlayer);
 }
 
-// Function to update a player element
+// Function to update a player position element
 function updatePlayer(player) {
   console.log("Entrou na função updatePlayer");
-  console.log(player.id);
-  const playerElement = document.querySelector(
-    ".player-" + player.id
-  );
-  console.log(playerElement)
+  const playerElement = document.querySelector(".player-" + player.id);
   if (playerElement) {
     playerElement.style.top = player.y * 20 + "px";
     playerElement.style.left = player.x * 20 + "px";
@@ -190,14 +171,9 @@ function createFood(food) {
 // Function to update a food element
 function updateFood(food) {
   console.log("Entrou na função updateFood");
-  console.log(food)
   const foodElement = document.querySelector(".food");
-  console.log(foodElement)
   if (foodElement) {
     foodElement.style.top = food.y * 20 + "px";
     foodElement.style.left = food.x * 20 + "px";
   }
-
 }
-
-
