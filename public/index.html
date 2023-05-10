@@ -7,14 +7,25 @@
   <body id="body">
     <h1 id="game-title">Multiplayer Snake Game</h1>
     <p id="sub-title">Esperando por outros jogadores...</p>
+    <div class="form">
+      <form method="GET">
+        <label for="username">Name:</label><br>
+        <input type="text" id="username" name="username" value=""><br>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
     <div id="start-game-btn-container">
       <button id="start-game-btn">Start</button>
     </div>
-    <div id="game-area">
-      <div id="game-score-container"></div>
-      <div id="game-board"></div>
-      <div id="game-instructions">
-        <span>Use as teclas WASD do teclado para controlar a cobra.</span>
+    <div>
+      <div id="game-area">
+        <div id="game-board"></div>
+        <!-- <div id="game-instructions">
+          <span>Use as teclas WASD do teclado para controlar a cobra.</span>
+        </div> -->
+      </div>
+      <div id="game-score-container">
+        <h1>Score</h1>
       </div>
     </div>
     <div id="game-over-message-container">

@@ -5,6 +5,8 @@ body {
 #game-area{
   display: flex;
   gap: 20px;
+  /* align-items: center; */
+  justify-content: center; 
 }
 
 #start-game-btn-container {
@@ -17,11 +19,14 @@ body {
 #game-score-container {
   border-radius: 10px;
   background-color: #ffffff88;
-  width: 200px;
+  width: 300px;
   max-width: 300px;
-  margin-right: 20px;
-  margin-left: 20px;
-  flex-grow: 2;
+  position: absolute;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-left: 150px;
+  visibility: hidden;
+  /* flex-grow: 2; */
 }
 
 #start-game-btn {
@@ -61,12 +66,13 @@ body {
 #game-board {
   width: 800px;
   height: 800px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   background-color: rgb(110, 255, 110);
   position: relative;
   flex-grow: 6;
   max-width: 800px;
   max-height: 800px;
+  position: absolute;
 }
 
 #game-board .food {
@@ -120,4 +126,8 @@ body {
 
 #game-instructions li {
   margin-bottom: 5px;
+}
+
+.form {
+  
 }

@@ -91,6 +91,8 @@ function handleGameStart(gameStateMsg) {
   gameActive = true;
   gameState = gameStateMsg;
 
+  document.getElementById("game-score-container").style.visibility = "visible";
+
   // Create the initial player and food element
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
