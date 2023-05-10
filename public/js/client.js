@@ -6,7 +6,8 @@ const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
 const startGameBtn = document.getElementById("start-game-btn");
 const body = document.getElementById("body");
-
+const playerReadyBtn = document.getElementById("player-ready-btn");
+const userFormData = document.getElementById("user-form-data");
 let gameActive = false;
 let playerScore = 0;
 let gameState;
@@ -16,6 +17,27 @@ document.getElementById("game-over-message-container").style.display = "none";
 // Listen for start game button click
 startGameBtn.addEventListener("click", () => {
   socket.emit("gameStart");
+});
+
+playerReadyBtn.addEventListener("click", () => {
+  let username = document.getElementById("username").value;
+  if (username === "") {
+    alert("Digite um nome de usuário");
+    return;
+  }
+  
+  let usercolor = document.getElementById("usercolor").value;
+  let userReady = true;
+
+  let userData = {
+    username: username,
+    usercolor: usercolor,
+    userReady: userReady,
+  };
+
+  socket.emit("userReady", userData);
+
+  document.getElementById("user-form-data").style.display = "none";
 });
 
 // Listen for keydown events to move the player
@@ -58,7 +80,6 @@ socket.on("updateFood", handleUpdateFood);
 
 function handleVisualConfigs(configs) {
   console.log("Entrou na função handleVisualConfigs");
-  document.getElementById("sub-title").innerHTML = configs.subTitle;
   document.getElementById("game-instructions").style.display =
     configs.gameInstructionsOn;
   document.getElementById("game-over-message-container").style.display =
@@ -72,7 +93,7 @@ function handlePlayersScore(players) {
   console.log("Entrou na função handlePlayersScore");
 
   players.forEach((player) => {
-    createPlayerScore(player.id);
+    createPlayerScore(player.id, player.name, player.color);
   });
 }
 
@@ -81,7 +102,7 @@ function handleUpdatePlayersScore(players) {
   console.log("Entrou na função updateScore");
 
   players.forEach((player) => {
-    updatePlayerScore(player.id, player.score);
+    updatePlayerScore(player.id, player.name, player.score);
   });
 }
 
@@ -120,21 +141,22 @@ function handleGameState(gameStateMsg) {
 }
 
 // Function to create a playerScore element
-function createPlayerScore(playerId) {
+function createPlayerScore(playerId, playerName, playerColor) {
   console.log("Entrou na função createScore");
 
   const newScorePlayer = document.createElement("p");
   newScorePlayer.className = "score score-" + playerId;
-  newScorePlayer.innerText = playerId + ": 0";
+  newScorePlayer.style.color = playerColor;
+  newScorePlayer.innerText = playerName + ": 0";
   scoreDisplay.appendChild(newScorePlayer);
 }
 
 // Function to update a player score element
-function updatePlayerScore(playerId, score) {
+function updatePlayerScore(playerId, playerName, score) {
   const scoreElement = document.querySelector(".score-" + playerId);
 
   if (scoreElement) {
-    scoreElement.innerText = playerId + ": " + score;
+    scoreElement.innerText = playerName + ": " + score;
   }
 }
 
@@ -146,6 +168,7 @@ function createPlayer(player) {
   newPlayer.className = "player player-" + player.id;
   newPlayer.style.top = player.y * 20 + "px";
   newPlayer.style.left = player.x * 20 + "px";
+  newPlayer.style.backgroundColor = player.color;
   gameBoard.appendChild(newPlayer);
 }
 
@@ -164,9 +187,14 @@ function createFood(food) {
   console.log("Entrou na função createFood");
   const newFood = document.createElement("div");
   newFood.className = "food";
-  newFood.style.color = "red";
   newFood.style.top = food.y * 20 + "px";
   newFood.style.left = food.x * 20 + "px";
+
+  const foodImg = document.createElement("img");
+  foodImg.src = "../assets/imgs/food-img.png";
+  foodImg.style.width = "20px";
+  foodImg.style.height = "20px";
+  newFood.appendChild(foodImg);
   gameBoard.appendChild(newFood);
 }
 

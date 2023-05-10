@@ -1,12 +1,22 @@
-body {
-  background-color: black;
+@font-face {
+  font-family: VT323;
+  src: url(../assets/fonts/VT323-Regular.ttf);
 }
 
-#game-area{
+* {
+  font-family: VT323;
+  font-weight: lighter;
+}
+
+body {
+  background-color: #3B3579;
+}
+
+#game-area {
   display: flex;
   gap: 20px;
   /* align-items: center; */
-  justify-content: center; 
+  justify-content: center;
 }
 
 #start-game-btn-container {
@@ -58,7 +68,7 @@ body {
 
 #game-title {
   color: white;
-  font-size: 24px;
+  font-size: 80px;
   text-align: center;
   margin-top: 10px;
 }
@@ -78,7 +88,7 @@ body {
 #game-board .food {
   width: 20px;
   height: 20px;
-  background-color: red;
+  background-color: #00000000;
   position: absolute;
 }
 
@@ -129,5 +139,4 @@ body {
 }
 
 .form {
-  
 }

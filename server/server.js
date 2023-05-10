@@ -17,6 +17,17 @@ let visualConfigs = {
   gameInstructionsOn: "block",
 };
 
+function verifyPlayersReady() {
+  let playersReady = 0;
+  players.forEach((player) => {
+    console.log(player);
+    if (player.userReady) {
+      playersReady++;
+    }
+  });
+  return playersReady;
+}
+
 function initGame() {
   clearInterval(gameLoopIntervalId);
   spawnFood();
@@ -39,20 +50,16 @@ function updateGame() {
     const player = players[i];
     switch (player.direction) {
       case "up":
-        if (player.y != 0)
-          player.y--;
+        if (player.y != 0) player.y--;
         break;
       case "down":
-        if (player.y != 39)
-          player.y++;
+        if (player.y != 39) player.y++;
         break;
       case "left":
-        if (player.x != 0)
-          player.x--;
+        if (player.x != 0) player.x--;
         break;
       case "right":
-        if (player.x != 39)
-          player.x++;
+        if (player.x != 39) player.x++;
         break;
     }
     // console.log(player.id + " -  x: " + player.x + " y: " + player.y);
@@ -81,10 +88,13 @@ io.on("connection", (socket) => {
     y: Math.floor(Math.random() * 39) + 1,
     direction: "",
     score: 0,
+    name: "",
+    color: "",
+    userReady: false,
   };
 
   players.push(player);
-  console.log("Entrou mais um player, agora temos: " + players.length);
+  // console.log("Entrou mais um player, agora temos: " + players.length);
 
   // Send initial game state to new player
   socket.emit("init", { player, players, food });
@@ -101,7 +111,7 @@ io.on("connection", (socket) => {
 
   // Remove player on disconnect
   socket.on("disconnect", () => {
-    console.log(`Player ${socket.id} disconnected`);
+    // console.log(`Player ${socket.id} disconnected`);
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === socket.id) {
         players.splice(i, 1);
@@ -110,9 +120,22 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("userReady", (userData) => {
+    players.forEach((player) => {
+      if (player.id === socket.id) {
+        player.name = userData.username;
+        player.color = userData.usercolor;
+        player.userReady = true;
+        console.log(player);
+      }
+    });
+  });
+
   socket.on("gameStart", () => {
     // Start game when there are at least two players
-    if (players.length >= 2 && !gameLoopIntervalId) {
+    let playersReady = verifyPlayersReady();
+    console.log("Players ready: " + playersReady);
+    if (playersReady >= 2 && !gameLoopIntervalId) {
       console.log("More than 2 players, starting game");
 
       visualConfigs.subTitle = "Game started!";
