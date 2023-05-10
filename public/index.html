@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title id="game-title">Multiplayer Snake Game</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  </head>
-  <body id="body">
-    <h1 id="game-title">Multiplayer Snake Game</h1>
-    <div id="user-form-data">
-      <label for="username">Name:</label><br />
-      <input type="text" id="username" value="" /><br />
-      <input type="color" id="usercolor" value="#aaaaaa" /><br />
-      <button id="player-ready-btn">I Am Ready</button>
-    </div>
-    <div id="start-game-btn-container">
-      <button id="start-game-btn">Start</button>
-    </div>
-    <div>
-      <div id="game-area">
-        <div id="game-board"></div>
-        <div id="game-instructions">
-          <span>Use as teclas WASD do teclado para controlar a cobra.</span>
-        </div>
-      </div>
-      <div id="game-score-container">
-        <h1>Score</h1>
-      </div>
-    </div>
 
-    <div id="game-over-message-container">
-      <p id="game-over-message"></p>
-      <button id="restart-game-btn">Restart</button>
+<head>
+  <title id="game-title">Multiplayer Snake Game</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+</head>
+
+<body id="body">
+  <h1 id="game-title">MULTIPLAYER SNAKE GAME</h1>
+  <div id="user-form-data">
+    <label for="username">PRESS YOUR NAME:</label><br />
+    <input type="text" id="username" value="" /><br />
+    <label for="usercolor">SELECT YOUR COLOR:</label><br />
+
+    <input type="color" id="usercolor" value="#aaaaaa" /><br />
+    <button id="player-ready-btn">I AM READY</button>
+  </div>
+  <div id="start-game-btn-container">
+    <button id="start-game-btn">START GAME</button>
+  </div>
+  <div>
+    <div id="game-area">
+      <div id="game-board"></div>
+      <div id="game-instructions">
+        <span>Use as teclas WASD do teclado para controlar a cobra.</span>
+      </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="js/client.js"></script>
-  </body>
+    <div id="game-score-container">
+      <h1>Score</h1>
+    </div>
+    <div id="credits">
+      <p style="color: #3B3579">Credits</p>
+      <p>Éricles Santos</p>
+      <p>Kendy Ferreira</p>
+      <p>Maria Milena</p>
+      <p>Joanne Stephany</p>
+    </div>
+  </div>
+
+  <div id="game-over-message-container">
+    <p id="game-over-message"></p>
+    <button id="restart-game-btn">Restart</button>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/client.js"></script>
+</body>
+
 </html>
