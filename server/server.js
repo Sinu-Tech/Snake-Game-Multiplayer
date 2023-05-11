@@ -5,11 +5,13 @@ const io = require("socket.io")(http);
 const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
+// Game objects
 let players = [];
 let food = {};
 let gameLoopIntervalId;
 
-function verifyPlayersReady() {
+// Function to verify how many players are ready
+function getCountPlayersReady() {
   let playersReady = 0;
   players.forEach((player) => {
     if (player.userReady) {
@@ -21,13 +23,13 @@ function verifyPlayersReady() {
 
 function initGame() {
   clearInterval(gameLoopIntervalId);
-  spawnFood();
+  generateFoodPosition();
 
   // Start game loop
   gameLoopIntervalId = setInterval(updateGame, 100);
 }
 
-function spawnFood() {
+function generateFoodPosition() {
   food = {
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
@@ -35,7 +37,7 @@ function spawnFood() {
 }
 
 function updateGame() {
-  // Move players
+  // Move players position
   players.forEach((player) => {
     switch (player.direction) {
       case "up":
@@ -55,21 +57,19 @@ function updateGame() {
     // Check if player collided with a food
     if (player.x === food.x && player.y === food.y) {
       player.score++;
-      spawnFood();
+      generateFoodPosition();
       io.emit("updatePlayersScore", players);
       io.emit("updateFoodPosition", food);
     }
   });
 
   // Send game state to all clients
-  io.emit("gameState", { players, food });
+  io.emit("updatePlayersPosition", players);
 }
 
 io.on("connection", (socket) => {
-  // console.log(`Player ${socket.id} connected`);
-
   // Add new player to the server data
-  const player = {
+  let player = {
     id: socket.id,
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
@@ -81,18 +81,8 @@ io.on("connection", (socket) => {
   };
   players.push(player);
 
-  // Update player direction
-  socket.on("playerMove", (direction) => {
-    players.forEach((player) => {
-      if (player.id === socket.id) {
-        player.direction = direction;
-      }
-    });
-  });
-
   // Remove player on disconnect
   socket.on("disconnect", () => {
-    // console.log(`Player ${socket.id} disconnected`);
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === socket.id) {
         players.splice(i, 1);
@@ -101,30 +91,41 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Update player direction
+  socket.on("playerPressedDirection", (direction) => {
+    for (let i = 0; i < players.length; i++) {
+      if (players[i].id === socket.id) {
+        players[i].direction = direction;
+        break;
+      }
+    }
+  });
+
   // Get player name and color and set player as ready
   socket.on("userReady", (userData) => {
-    players.forEach((player) => {
-      if (player.id === socket.id) {
-        player.name = userData.username;
-        player.color = userData.usercolor;
-        player.userReady = true;
+    for (let i = 0; i < players.length; i++) {
+      if (players[i].id === socket.id) {
+        players[i].name = userData.username;
+        players[i].color = userData.usercolor;
+        players[i].userReady = true;
+        break;
       }
-    });
+    }
   });
 
   socket.on("gameStart", () => {
-    let playersReady = verifyPlayersReady();
+    let countPlayersReady = getCountPlayersReady();
 
-    // Start game when there are at least two players ready
+    // Game Start Condition
     if (
-      playersReady == players.length &&
-      playersReady >= 2 &&
+      ((countPlayersReady == players.length && countPlayersReady >= 2) ||
+        countPlayersReady >= 4) &&
       !gameLoopIntervalId
     ) {
       initGame();
 
       io.emit("gameStart", { players, food });
-      io.emit("playersScore", players);
+      io.emit("createPlayersScore", players);
     }
   });
 });

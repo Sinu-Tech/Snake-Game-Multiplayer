@@ -1,53 +1,66 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Multiplayer Snake Game</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    <link rel="icon" href="/public/assets/imgs/food-img.png" />
+  </head>
 
-<head>
-  <title>Multiplayer Snake Game</title>
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+  <body id="body">
+    <h1 id="game-title">MULTIPLAYER SNAKE GAME</h1>
 
-<body id="body">
-  <h1 id="game-title">MULTIPLAYER SNAKE GAME</h1>
-  <div class="flex-container">
-    <div id="game-score-container">
-      <h1>Score</h1>
+    <div id="form-container">
+      <div id="user-form-data">
+        <div id="username-container">
+          <label for="username">PRESS YOUR NAME:</label>
+          <input type="text" id="username" value="" />
+        </div>
+        <div id="usercolor-container">
+          <label for="usercolor">SELECT YOUR COLOR:</label>
+          <input type="color" id="usercolor" value="#aaaaaa" />
+        </div>
+      </div>
+      <button id="player-ready-btn">I AM READY</button>
     </div>
+
+    <div class="container" id="game-score-container">
+      <p class="box-title">Scoreboard</p>
+      <div id="players-score-container" ></div>
+    </div>
+
     <div id="game-area">
       <div id="game-board"></div>
       <div id="start-game-btn-container">
         <button id="start-game-btn">START GAME</button>
       </div>
     </div>
-    <div id="user-form-data">
-      <label for="username">PRESS YOUR NAME:</label><br />
-      <input type="text" id="username" value="" /><br />
-      <label for="usercolor">SELECT YOUR COLOR:</label><br />
-      <br>
-      <input type="color" id="usercolor" value="#aaaaaa" /><br />
-      <button id="player-ready-btn">I AM READY</button>
-    </div>
-    <div>
-      <div id="game-instructions">
-        <p style="color: #3B3579">Tutorial</p>
-        <span>Use the WASD on the keyboard to control the snake.</span>
-        <p>W - UP</p>
-        <p>A - DOWN</p>
-        <p>S - LEFT</p>
-        <p>D - RIGHT</p>
-      </div>
     
-      <div id="credits">
-        <p style="color: #3B3579">Credits</p>
+      <div class="container" id="game-instructions">
+        <div>
+          <p class="box-title">Tutorial</p>
+        </div>
+        <div>
+          <p style="line-height: 30px; font-weight: bold; white-space: normal">
+            Use the WASD on the keyboard to control the snake.
+          </p>
+        </div>
+        <div id="key-directions">
+          <p>W - UP</p>
+          <p>A - DOWN</p>
+          <p>S - LEFT</p>
+          <p>D - RIGHT</p>
+        </div>
+      </div>
+      
+      <div class="container" id="credits">
+        <p class="box-title">Credits</p>
         <p>Éricles Santos</p>
         <p>Kendy Ferreira</p>
         <p>Maria Milena</p>
         <p>Joanne Stephany</p>
       </div>
-    </div>
-  </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="js/client.js"></script>
-</body>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/client.js"></script>
+  </body>
 </html>
