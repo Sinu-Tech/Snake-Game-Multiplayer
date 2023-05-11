@@ -2,20 +2,12 @@ const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
-
 const PORT = process.env.PORT || 3000;
-
 app.use(express.static("public"));
 
 let players = [];
 let food = {};
 let gameLoopIntervalId;
-let visualConfigs = {
-  subTitle: "Waiting for players...",
-  startGameButtonOn: "block",
-  GameOverMessageContainerOn: "none",
-  gameInstructionsOn: "block",
-};
 
 function verifyPlayersReady() {
   let playersReady = 0;
@@ -41,13 +33,11 @@ function spawnFood() {
     x: Math.floor(Math.random() * 39) + 1,
     y: Math.floor(Math.random() * 39) + 1,
   };
-  // console.log("Spawnou comida em x: " + food.x + " y: " + food.y);
 }
 
 function updateGame() {
   // Move players
-  for (let i = 0; i < players.length; i++) {
-    const player = players[i];
+  players.forEach((player) => {
     switch (player.direction) {
       case "up":
         if (player.y != 0) player.y--;
@@ -62,7 +52,6 @@ function updateGame() {
         if (player.x != 39) player.x++;
         break;
     }
-    // console.log(player.id + " -  x: " + player.x + " y: " + player.y);
 
     // Check if player collided with a food
     if (player.x === food.x && player.y === food.y) {
@@ -71,17 +60,16 @@ function updateGame() {
       io.emit("updatePlayersScore", players);
       io.emit("updateFood", food);
     }
-  }
+  });
 
   // Send game state to all clients
   io.emit("gameState", { players, food });
 }
 
 io.on("connection", (socket) => {
-  console.log(`Player ${socket.id} connected`);
-  io.emit("visualConfigs", visualConfigs);
+  // console.log(`Player ${socket.id} connected`);
 
-  // Add new player
+  // Add new player to the server data
   const player = {
     id: socket.id,
     x: Math.floor(Math.random() * 39) + 1,
@@ -92,21 +80,15 @@ io.on("connection", (socket) => {
     color: "",
     userReady: false,
   };
-
   players.push(player);
-  // console.log("Entrou mais um player, agora temos: " + players.length);
-
-  // Send initial game state to new player
-  socket.emit("init", { player, players, food });
 
   // Update player direction
   socket.on("playerMove", (direction) => {
-    for (let i = 0; i < players.length; i++) {
-      if (players[i].id === socket.id) {
-        players[i].direction = direction;
-        break;
+    players.forEach((player) => {
+      if (player.id === socket.id) {
+        player.direction = direction;
       }
-    }
+    });
   });
 
   // Remove player on disconnect
@@ -126,7 +108,6 @@ io.on("connection", (socket) => {
         player.name = userData.username;
         player.color = userData.usercolor;
         player.userReady = true;
-        console.log(player);
       }
     });
   });
@@ -134,17 +115,12 @@ io.on("connection", (socket) => {
   socket.on("gameStart", () => {
     // Start game when there are at least two players
     let playersReady = verifyPlayersReady();
-    console.log("Players ready: " + playersReady);
-    if (playersReady >= 2 && !gameLoopIntervalId) {
-      console.log("More than 2 players, starting game");
 
-      visualConfigs.subTitle = "Game started!";
-      visualConfigs.startGameButtonOn = "none";
-      visualConfigs.GameOverMessageContainerOn = "none";
-      visualConfigs.gameInstructionsOn = "none";
-
-      io.emit("visualConfigs", visualConfigs);
-
+    if (
+      playersReady == players.length &&
+      playersReady >= 2 &&
+      !gameLoopIntervalId
+    ) {
       initGame();
 
       io.emit("gameStart", { players, food });

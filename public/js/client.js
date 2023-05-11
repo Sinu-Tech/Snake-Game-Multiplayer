@@ -1,18 +1,17 @@
 const socket = io();
 
+// Saving all the DOM elements in variables
+const body = document.getElementById("body");
+const gameArea = document.getElementById("game-area");
 const gameBoard = document.getElementById("game-board");
 const scoreDisplay = document.getElementById("game-score-container");
-const gameOverDisplay = document.getElementById("game-over-message-container");
 const gameInstructions = document.getElementById("game-instructions");
 const startGameBtn = document.getElementById("start-game-btn");
-const body = document.getElementById("body");
 const playerReadyBtn = document.getElementById("player-ready-btn");
 const userFormData = document.getElementById("user-form-data");
-let gameActive = false;
-let playerScore = 0;
-let gameState;
 
-document.getElementById("game-over-message-container").style.display = "none";
+// Game variables
+let gameActive = false;
 
 // Listen for start game button click
 startGameBtn.addEventListener("click", () => {
@@ -25,7 +24,7 @@ playerReadyBtn.addEventListener("click", () => {
     alert("Digite um nome de usuário");
     return;
   }
-  
+
   let usercolor = document.getElementById("usercolor").value;
   let userReady = true;
 
@@ -36,7 +35,7 @@ playerReadyBtn.addEventListener("click", () => {
   };
 
   socket.emit("userReady", userData);
-
+  gameArea.style.display = "flex";
   document.getElementById("user-form-data").style.display = "none";
 });
 
@@ -68,25 +67,11 @@ document.addEventListener("keydown", (event) => {
 });
 
 // Listen for updates from the server
-socket.on("init", handleInit);
+socket.on("gameStart", handleGameStart);
 socket.on("gameState", handleGameState);
 socket.on("playersScore", handlePlayersScore);
 socket.on("updatePlayersScore", handleUpdatePlayersScore);
-socket.on("gameStart", handleGameStart);
-socket.on("visualConfigs", handleVisualConfigs);
 socket.on("updateFood", handleUpdateFood);
-// socket.on("gameAborted", handleGameAborted);
-// socket.on("gameOver", handleGameOver);
-
-function handleVisualConfigs(configs) {
-  console.log("Entrou na função handleVisualConfigs");
-  document.getElementById("game-instructions").style.display =
-    configs.gameInstructionsOn;
-  document.getElementById("game-over-message-container").style.display =
-    configs.GameOverMessageContainerOn;
-  document.getElementById("start-game-btn").style.display =
-    configs.startGameButtonOn;
-}
 
 // Placar de todos os jogadores
 function handlePlayersScore(players) {
@@ -107,24 +92,16 @@ function handleUpdatePlayersScore(players) {
 }
 
 // Function to initialize the game board
-function handleGameStart(gameStateMsg) {
+function handleGameStart(gameState) {
   console.log("Entrou na função gameStart cliente");
   gameActive = true;
-  gameState = gameStateMsg;
 
   document.getElementById("game-score-container").style.visibility = "visible";
-
   // Create the initial player and food element
   for (let i = 0; i < gameState.players.length; i++) {
     createPlayer(gameState.players[i]);
   }
   createFood(gameState.food);
-}
-
-// Function to handle the init event from the server
-function handleInit(msg) {
-  console.log("Entrou na função handleInit");
-  gameState = msg;
 }
 
 // Function to uptade food position
@@ -133,17 +110,14 @@ function handleUpdateFood(food) {
 }
 
 // Function to handle the gameState event from the server
-function handleGameState(gameStateMsg) {
-  gameState = gameStateMsg;
-  for (let i = 0; i < gameState.players.length; i++) {
-    updatePlayer(gameState.players[i]);
-  }
+function handleGameState(gameState) {
+  gameState.players.forEach((player) => {
+    updatePlayer(player);
+  });
 }
 
 // Function to create a playerScore element
 function createPlayerScore(playerId, playerName, playerColor) {
-  console.log("Entrou na função createScore");
-
   const newScorePlayer = document.createElement("p");
   newScorePlayer.className = "score score-" + playerId;
   newScorePlayer.style.color = playerColor;
@@ -162,19 +136,17 @@ function updatePlayerScore(playerId, playerName, score) {
 
 // Function to create a player element
 function createPlayer(player) {
-  console.log("Entrou na função createPlayer");
   const newPlayer = document.createElement("div");
-  console.log("Criando jogador id: " + player.id);
   newPlayer.className = "player player-" + player.id;
   newPlayer.style.top = player.y * 20 + "px";
   newPlayer.style.left = player.x * 20 + "px";
+  newPlayer.style.border = "1px solid black";
   newPlayer.style.backgroundColor = player.color;
   gameBoard.appendChild(newPlayer);
 }
 
 // Function to update a player position element
 function updatePlayer(player) {
-  console.log("Entrou na função updatePlayer");
   const playerElement = document.querySelector(".player-" + player.id);
   if (playerElement) {
     playerElement.style.top = player.y * 20 + "px";

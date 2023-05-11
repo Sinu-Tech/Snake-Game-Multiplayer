@@ -6,14 +6,14 @@
 * {
   font-family: VT323;
   font-weight: lighter;
+  text-transform: uppercase;
 }
 
 body {
-  background-color: #3B3579;
+  background-color: #3b3579;
 }
 
 #game-area {
-  display: flex;
   gap: 20px;
   align-items: center;
   justify-content: center;
@@ -25,7 +25,6 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  visibility: hidden;
 }
 
 #game-score-container {
@@ -33,12 +32,9 @@ body {
   background-color: #ffffff88;
   width: 300px;
   max-width: 300px;
-  /* position: absolute; */
   padding-right: 20px;
   padding-left: 20px;
-  /* margin-left: 150px; */
   visibility: hidden;
-  /* flex-grow: 2; */
 }
 
 #start-game-btn {
@@ -84,7 +80,7 @@ body {
   flex-grow: 6; */
   max-width: 800px;
   max-height: 800px;
-  border: 5px solid #078A24;
+  border: 5px solid #078a24;
   /* position: absolute; */
 }
 
@@ -162,15 +158,16 @@ body {
   font-size: 30px;
 }
 
-#user-form-data #usercolor{
+#user-form-data #usercolor {
   width: 45px;
   height: 45px;
   background-color: #00000000;
+  cursor: pointer;
 }
 
 #player-ready-btn {
-  background-color: #BBFD00;
-  border: 5px solid #078A24;
+  background-color: #bbfd00;
+  border: 5px solid #078a24;
   width: 250px;
   height: 55px;
   font-weight: 400;
