@@ -1,7 +1,7 @@
 const socket = io();
 
 // Saving all the DOM elements in variables
-const body = document.getElementById("body");
+// const body = document.getElementById("body");
 const gameArea = document.getElementById("game-area");
 const gameBoard = document.getElementById("game-board");
 const scoreDisplay = document.getElementById("game-score-container");
@@ -18,50 +18,15 @@ startGameBtn.addEventListener("click", () => {
   socket.emit("gameStart");
 });
 
-playerReadyBtn.addEventListener("click", () => {
-  let username = document.getElementById("username").value;
-  if (username === "") {
-    alert("Digite um nome de usuário");
-    return;
-  }
-
-  let usercolor = document.getElementById("usercolor").value;
-  let userReady = true;
-
-  let userData = {
-    username: username,
-    usercolor: usercolor,
-    userReady: userReady,
-  };
-
-  socket.emit("userReady", userData);
-  gameArea.style.display = "flex";
-  document.getElementById("user-form-data").style.display = "none";
-});
+// Listen for player ready button click
+playerReadyBtn.addEventListener("click", playerReadyEvent);
 
 // Listen for keydown events to move the player
 document.addEventListener("keydown", (event) => {
   if (gameActive) {
-    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
-      socket.emit("playerMove", "left");
-    } else if (
-      event.key === "w" ||
-      event.key === "W" ||
-      event.key === "ArrowUp"
-    ) {
-      socket.emit("playerMove", "up");
-    } else if (
-      event.key === "d" ||
-      event.key === "D" ||
-      event.key === "ArrowRight"
-    ) {
-      socket.emit("playerMove", "right");
-    } else if (
-      event.key === "s" ||
-      event.key === "S" ||
-      event.key === "ArrowDown"
-    ) {
-      socket.emit("playerMove", "down");
+    let pressedKey = getPressedKey(event.key);
+    if (pressedKey) {
+      socket.emit("playerMove", pressedKey);
     }
   }
 });
@@ -71,7 +36,7 @@ socket.on("gameStart", handleGameStart);
 socket.on("gameState", handleGameState);
 socket.on("playersScore", handlePlayersScore);
 socket.on("updatePlayersScore", handleUpdatePlayersScore);
-socket.on("updateFood", handleUpdateFood);
+socket.on("updateFoodPosition", handleUpdateFoodPosition);
 
 // Placar de todos os jogadores
 function handlePlayersScore(players) {
@@ -96,17 +61,18 @@ function handleGameStart(gameState) {
   console.log("Entrou na função gameStart cliente");
   gameActive = true;
 
-  document.getElementById("game-score-container").style.visibility = "visible";
+  scoreDisplay.style.visibility = "visible";
+  
   // Create the initial player and food element
-  for (let i = 0; i < gameState.players.length; i++) {
-    createPlayer(gameState.players[i]);
-  }
+  gameState.players.forEach((player) => {
+    createPlayer(player);
+  });
   createFood(gameState.food);
 }
 
 // Function to uptade food position
-function handleUpdateFood(food) {
-  updateFood(food);
+function handleUpdateFoodPosition(food) {
+  updateFoodPosition(food);
 }
 
 // Function to handle the gameState event from the server
@@ -171,11 +137,44 @@ function createFood(food) {
 }
 
 // Function to update a food element
-function updateFood(food) {
-  console.log("Entrou na função updateFood");
+function updateFoodPosition(food) {
   const foodElement = document.querySelector(".food");
   if (foodElement) {
     foodElement.style.top = food.y * 20 + "px";
     foodElement.style.left = food.x * 20 + "px";
+  }
+}
+
+function playerReadyEvent() {
+  let username = document.getElementById("username").value;
+  if (username === "") {
+    alert("Digite um nome de usuário");
+    return;
+  }
+
+  let usercolor = document.getElementById("usercolor").value;
+  let userReady = true;
+
+  let userData = {
+    username: username,
+    usercolor: usercolor,
+    userReady: userReady,
+  };
+
+  socket.emit("userReady", userData);
+  gameArea.style.display = "flex";
+  document.getElementById("user-form-data").style.display = "none";
+}
+
+// Function to verify direction of pressed key
+function getPressedKey(key) {
+  if (key === "a" || key === "A" || key === "ArrowLeft") {
+    return "left";
+  } else if (key === "w" || key === "W" || key === "ArrowUp") {
+    return "up";
+  } else if (key === "d" || key === "D" || key === "ArrowRight") {
+    return "right";
+  } else if (key === "s" || key === "S" || key === "ArrowDown") {
+    return "down";
   }
 }

@@ -12,7 +12,6 @@ let gameLoopIntervalId;
 function verifyPlayersReady() {
   let playersReady = 0;
   players.forEach((player) => {
-    console.log(player);
     if (player.userReady) {
       playersReady++;
     }
@@ -58,7 +57,7 @@ function updateGame() {
       player.score++;
       spawnFood();
       io.emit("updatePlayersScore", players);
-      io.emit("updateFood", food);
+      io.emit("updateFoodPosition", food);
     }
   });
 
@@ -102,6 +101,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Get player name and color and set player as ready
   socket.on("userReady", (userData) => {
     players.forEach((player) => {
       if (player.id === socket.id) {
@@ -113,9 +113,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("gameStart", () => {
-    // Start game when there are at least two players
     let playersReady = verifyPlayersReady();
 
+    // Start game when there are at least two players ready
     if (
       playersReady == players.length &&
       playersReady >= 2 &&
@@ -129,6 +129,7 @@ io.on("connection", (socket) => {
   });
 });
 
+// Start server
 http.listen(PORT, () => {
   console.log(`Server listening on port http://localhost:${PORT}/`);
 });
